@@ -1,3 +1,18 @@
+import cv2
+
+print(cv2. __version__)
+# Load the cascade classifier for detecting faces
+face_cascade = cv2.CascadeClassifier("haarcascade_frontalface_default.xml")
+
+# Read the image
+image = cv2.imread("input.jpg")
+
+
+def automatic_mode(image):
+    # Detect faces in the image
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    faces = face_cascade.detectMultiScale(gray, 1.1, 4)
+
     # If a face is detected
     if len(faces) > 0:
         # Get the coordinates of the face
