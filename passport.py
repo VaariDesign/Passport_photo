@@ -1,4 +1,5 @@
 import cv2
+import numpy as np
 
 
 print(cv2. __version__)
@@ -7,6 +8,12 @@ face_cascade = cv2.CascadeClassifier("haarcascade_frontalface_default.xml")
 
 # Read the image
 image = cv2.imread("input.jpg")
+
+def rotate_image(image, angle):
+    image_center = tuple(np.array(image.shape[1::-1]) / 2)
+    rot_mat = cv2.getRotationMatrix2D(image_center, angle, 1.0)
+    result = cv2.warpAffine(image, rot_mat, image.shape[1::-1], flags=cv2.INTER_LINEAR)
+    return result
 
 
 def automatic_mode(image):
@@ -39,7 +46,10 @@ def manual_mode(image):
 
 
     x, y, h = 100, 100, 400
+    rotate = 0
+
     # Finnish passport picture guide
+
 
     aspectratio = 36/47
     w = int(aspectratio * h)
@@ -66,13 +76,16 @@ def manual_mode(image):
     cv2.createTrackbar("X", "Image1", x, image.shape[1], lambda x: None)
     cv2.createTrackbar("Y", "Image1", y, image.shape[0], lambda x: None)
     cv2.createTrackbar("H", "Image1", h, image.shape[0], lambda x: None)
+    cv2.createTrackbar("Rotate", "Image1", rotate, 360, lambda x: None)
 
     while True:
         # Get the current values of the trackbars
         x = cv2.getTrackbarPos("X", "Image1")
         y = cv2.getTrackbarPos("Y", "Image1")
         h = cv2.getTrackbarPos("H", "Image1")
+        rotate = cv2.getTrackbarPos("Rotate", "Image1")
         w = int(aspectratio * h)
+
 
         head_top_y = int((4/47)*h)
         head_bot_y = int((6/47)*h)
@@ -86,8 +99,10 @@ def manual_mode(image):
 
         # Draw a rectangle around the cropping area
         img_copy = image.copy()
-        cv2.rectangle(img_copy, (x, y), (x+w, y+h), (255, 0, 0), 2)
+        img_copy = rotate_image(img_copy, rotate)
+        cv2.rectangle(img_copy, (x, y), (x+w, y+h), (0, 255, 0), 1)
 
+        #Draws Help lines
         cv2.line(img_copy, ((x+int(0.1*w)), y+ head_top_y), (x+int(0.9 * w), y+ head_top_y), (0, 0, 255), 1)
         cv2.line(img_copy, ((x+int(0.2*w)), y+ head_bot_y), (x+int(0.8 * w), y+ head_bot_y), (0, 0, 255), 1)
 
@@ -113,4 +128,3 @@ elif mode == "M":
     manual_mode(image)
 else:
     print("Invalid mode selected.")
-
