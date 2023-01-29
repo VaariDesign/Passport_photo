@@ -39,8 +39,8 @@ def manual_mode(image):
     height, width = image.shape[:2]
 
     # Scale the image to fit the screen
-    if height > 800 or width > 800:
-        scale_percent = 800/max(height, width)
+    if height > 1000 or width > 1000:
+        scale_percent = 1000/max(height, width)
         dimensions = (int(width * scale_percent), int(height * scale_percent))
         image = cv2.resize(image, dimensions, interpolation = cv2.INTER_AREA)
 
@@ -69,29 +69,32 @@ def manual_mode(image):
 
     # Crop the image
     cv2.namedWindow("Image1")
+    cv2.namedWindow("Image12")
 
 
 
     # Create trackbars to adjust the size and position of the cropping area
-    cv2.createTrackbar("X", "Image1", x, image.shape[1], lambda x: None)
-    cv2.createTrackbar("Y", "Image1", y, image.shape[0], lambda x: None)
-    cv2.createTrackbar("H", "Image1", h, image.shape[0], lambda x: None)
-    cv2.createTrackbar("Rotate", "Image1", rotate, 360, lambda x: None)
+    cv2.createTrackbar("X", "Image12", x, image.shape[1], lambda x: None)
+    cv2.createTrackbar("Y", "Image12", y, image.shape[0], lambda x: None)
+    cv2.createTrackbar("H", "Image12", h, image.shape[0], lambda x: None)
+    cv2.createTrackbar("Rotate", "Image12", rotate, 360, lambda x: None)
 
     while True:
         # Get the current values of the trackbars
-        x = cv2.getTrackbarPos("X", "Image1")
-        y = cv2.getTrackbarPos("Y", "Image1")
-        h = cv2.getTrackbarPos("H", "Image1")
-        rotate = cv2.getTrackbarPos("Rotate", "Image1")
+        x = cv2.getTrackbarPos("X", "Image12")
+        y = cv2.getTrackbarPos("Y", "Image12")
+        h = cv2.getTrackbarPos("H", "Image12")
+        rotate = cv2.getTrackbarPos("Rotate", "Image12")
         w = int(aspectratio * h)
 
 
         head_top_y = int((4/47)*h)
         head_bot_y = int((6/47)*h)
+        avg_head = int((head_top_y + head_bot_y)/2)
 
         chin_top_y = int((38/47)*h)
         chin_bot_y = int((40/47)*h)
+        avg_chin = int((chin_bot_y+chin_top_y)/2)
 
         nosel_x = int(w * (16.5/36))
         noser_x = int(w * (19.5/36))
@@ -112,6 +115,8 @@ def manual_mode(image):
         cv2.line(img_copy, ((x+nosel_x), y+ int(0.4 * h)), ((x+nosel_x), y+ int(0.7 * h)), (0, 0, 255), 1)
         cv2.line(img_copy, ((x+noser_x), y + int(0.4 * h)), ((x+noser_x), y+ int(0.7 * h)), (0, 0, 255), 1)
 
+        cv2.ellipse(img_copy, ((x+int(w/2)),y+int((avg_head+avg_chin)/2)), (int(0.3 * w),(int((avg_chin-avg_head)/2))),0, 0, 360, (0, 0, 255), 1)
+
 
         # Display the image with the cropping area
         cv2.imshow("Image1", img_copy)
@@ -128,3 +133,5 @@ elif mode == "M":
     manual_mode(image)
 else:
     print("Invalid mode selected.")
+
+
