@@ -6,3 +6,4 @@ Crop and resize photo for passport
 To Do:
 -GUI
 -Divide to modules/functions
+-Automation
