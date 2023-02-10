@@ -7,4 +7,3 @@ To Do:
 -GUI
 -Divide to modules/functions
 -Automation
-
